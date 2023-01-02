@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Transmutation Prototype</title>
+        <link rel="stylesheet" href="stylesheets/styles.css">
+    </head>
+    <body>
+        <div id="app">
+            <div class="main-content">
+                <table>
+                    <tr v-for="(row, r) in game.grid">
+                        <td v-for="(cell, c) in row">
+                            <button class="mac-btn" :class="{'selected': selectedCell[0] == r && selectedCell[1] == c}" @click="clickButton(r, c)">{{cell === null ? "" : cell.getText()}}</button>
+                        </td>
+                    </tr>
+                 </table>
+                 <div class="buy-screen menu-screen hidden">
+                    Buy select screen<br>
+                    <button v-for="data in Machine.text" @click="buyMachine(data.id)">{{data.name}}</button>
+                 </div>
+                 <div class="mac-screen menu-screen hidden">
+                    <div v-if="selectedMachine !== null">
+                        Machine info ({{selectedCell}})<br>
+                        <div v-show="selectedMachine.type === Machine.TYPE.EXTRACTOR">
+                            Item output: Water<br>
+                            Amount: {{selectedMachine.outputs["water"]}}<br>
+                            Push direction: {{DIRECTIONS_INFO[selectedMachine.pushDirection].name}}<br>
+                            <button v-for="info in DIRECTIONS_INFO" @click="() => selectedMachine.pushDirection = info.value">
+                                Set push direction to {{info.name.toLowerCase()}}
+                            </button>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+        <div>
+
+        </div>
+         <!-- Switch when update !-->
+         <script src="javascripts/libraries/vue.js"></script>
+         <script src="javascripts/index.js"></script>
+    </body>
+</html>

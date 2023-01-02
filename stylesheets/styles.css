@@ -1,0 +1,17 @@
+.main-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.mac-btn {
+   width: 48px;
+   height: 48px;
+}
+
+.mac-btn.selected {
+    background-color: aqua;
+}
+
+.hidden {
+    display: none;
+}
