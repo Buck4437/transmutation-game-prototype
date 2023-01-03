@@ -214,7 +214,6 @@ class Machine {
         } else if (this.type === Machine.TYPE.INPUT) {
 
         } else if (this.type === Machine.TYPE.OUTPUT) {
-            console.log("dold")
             for (let key of Object.keys(this.inputs)) {
                 insertItem(game.inventory, key, this.inputs[key])
                 extractItem(this.inputs, key, this.inputs[key])
