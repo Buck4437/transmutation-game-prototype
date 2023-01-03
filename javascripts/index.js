@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-new
 
-function makeMachine(type) {
-    return new Machine(type)
+function makeMachine(type, r, c) {
+    return new Machine(type, [r, c])
 }
 
 function hash(listNumbers) {
-    return numbers.join(", ")
+    return listNumbers.join(", ")
 }
 
 function unhash(hash) {
@@ -26,7 +26,7 @@ function zip() {
 }
 
 function vec_add(v1, v2) {
-    return zip(v1, v2).map(arr => arr.reduce(a, b => a + b, 0))
+    return zip(v1, v2).map(arr => arr.reduce((a, b) => a + b, 0))
 }
 
 game = {
@@ -45,31 +45,53 @@ const DIRECTIONS = {
 const DIRECTIONS_INFO = {
     0: {
         name: "Up",
-        vec: [0, -1],
+        vec: [-1, 0],
         value: 0
     },
     1: {
         name: "Right",
-        vec: [1, 0],
+        vec: [0, 1],
         value: 1
     },
     2: {
         name: "Down",
-        vec: [0, 1],
+        vec: [1, 0],
         value: 2
     },
     3: {
         name: "Left",
-        vec: [-1, 0],
+        vec: [0, -1],
         value: 3
     }
 }
 
 function getMachineAt(r, c) {
-    if (0 < r || r > 10 || c < 0 || c > 10) {
+    if (r < 0 || r > 9 || c < 0 || c > 9) {
         return null
     }
     return game.grid[r][c]
+}
+
+function insertItem(inventory, name, count, max = -1) {
+    if (!Object.keys(inventory).includes(name)) {
+        Vue.set(inventory, name, 0)
+    }
+    const maxInsertable = (max >= 0 ? Math.min(count, max - inventory[name]) : count)
+    inventory[name] += maxInsertable
+    return maxInsertable
+}
+
+function extractItem(inventory, name, count) {
+    if (!Object.keys(inventory).includes(name)) {
+        return 0;
+    }
+    const maxExtractable = Math.min(inventory[name], count)
+    if (maxExtractable == count) {
+        delete inventory[name]
+    } else {
+        inventory[name] -= maxExtractable
+    }
+    return maxExtractable
 }
 
 class Machine {
@@ -125,33 +147,78 @@ class Machine {
         }
     }
 
-    constructor(type) {
+    constructor(type, coord) {
         this.type = type
+        this.coord = coord
         this.inputs = {}
         this.outputs = {}
         this.inputItem = (type === Machine.TYPE.EXTRACTOR ? "water" : null)
         this.inputRate = 1
         this.outputRate = 1
+        this.inputMaxSlot = 1
         this.pushDirection = DIRECTIONS.UP
         this.inputMax = 10
         this.outputMax = 10
+        this.isPushing = false
+    }
+
+    canExtract() {
+        return [
+            Machine.TYPE.INPUT,
+            Machine.TYPE.TRANSMUTER,
+            Machine.TYPE.EXTRACTOR
+        ].includes(this.type)
+    }
+
+    canInsert(type) {
+        if ([
+            Machine.TYPE.OUTPUT,
+            Machine.TYPE.TRANSMUTER
+        ].includes(this.type)) {
+            if (Object.keys(this.inputs) < this.inputMaxSlot) {
+                return true
+            }
+            if (Object.keys(this.inputs).includes(type)) {
+                if (this.inputs[type] < this.inputMax) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     generateStuff(dt) {
+        // Try to push output liquid to the neighbouring machine
+        const neighbour = getMachineAt(...vec_add(this.coord, DIRECTIONS_INFO[this.pushDirection].vec))
+
+        if (this.canExtract() && this.isPushing) {
+            if (neighbour !== null) {
+                for (let key of Object.keys(this.outputs)) {
+                    if (neighbour.canInsert(key)) {
+                        const maxExtractable = extractItem(this.outputs, key, this.outputRate * dt)
+                        const maxInserted = insertItem(neighbour.inputs, key, maxExtractable, neighbour.inputMax)
+                        if (maxInserted !== maxExtractable) {
+                            insertItem(this.outputs, key, maxExtractable - maxInserted)
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
         if (this.type === Machine.TYPE.EXTRACTOR) {
             if (this.inputItem != null) {
                 const itemCount = this.inputRate * dt
-                if (!Object.keys(this.outputs).includes(this.inputItem)) {
-                    Vue.set(this.outputs, this.inputItem, 0)
-                }
-                const maxInsertable = (this.outputMax >= 0 ? Math.min(itemCount, this.outputMax - this.outputs[this.inputItem]) : itemCount)
-                this.outputs[this.inputItem] += maxInsertable
+                insertItem(this.outputs, this.inputItem, itemCount, this.outputMax)
             }
         } else if (this.type === Machine.TYPE.INPUT) {
 
         } else if (this.type === Machine.TYPE.OUTPUT) {
-            // const itemCount = extractItem(game.inventory, this.inputItem, this.inputRate * dt)
-
+            console.log("dold")
+            for (let key of Object.keys(this.inputs)) {
+                insertItem(game.inventory, key, this.inputs[key])
+                extractItem(this.inputs, key, this.inputs[key])
+            }
         } else if (this.type === Machine.TYPE.TRANSMUTER) {
             
         }
@@ -212,7 +279,7 @@ app = new Vue({
             //make a copy of the row
             const newRow = this.game.grid[r].slice(0)
             // update the value
-            newRow[c] = makeMachine(type)
+            newRow[c] = makeMachine(type, r, c)
             // update it in the grid
             this.$set(this.game.grid, r, newRow)
 

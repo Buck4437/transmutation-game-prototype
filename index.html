@@ -26,12 +26,26 @@
                             Item output: Water<br>
                             Amount: {{selectedMachine.outputs["water"]}}<br>
                             Push direction: {{DIRECTIONS_INFO[selectedMachine.pushDirection].name}}<br>
+                        </div>
+
+                        <div v-show="selectedMachine.type === Machine.TYPE.OUTPUT">
+                            This is output tank<br>
+                            Amount: {{selectedMachine.inputs["water"] || 0}}<br>
+                        </div>
+
+                        <div v-show="selectedMachine.canExtract()">
                             <button v-for="info in DIRECTIONS_INFO" @click="() => selectedMachine.pushDirection = info.value">
                                 Set push direction to {{info.name.toLowerCase()}}
+                            </button><br>
+                            <button @click="selectedMachine.isPushing = !selectedMachine.isPushing">
+                                Push: {{selectedMachine.isPushing ? "On" : "Off"}}
                             </button>
                         </div>
                     </div>
                  </div>
+            </div>
+            <div>
+                <div v-for="(value, name) in game.inventory">{{name}}: {{value}}</div>
             </div>
         </div>
         <div>
