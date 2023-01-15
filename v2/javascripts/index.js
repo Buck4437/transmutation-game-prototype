@@ -1,5 +1,6 @@
 const game = {
     machines: [],
+    entanglements: [],
     inventory: {},
     machineIdCount: 0,
     lastTick: Date.now()
@@ -10,7 +11,7 @@ const itemNames = [
     "fire",
     "earth",
     "air",
-    "aether", // water + fire + earth + air
+    "aether", // water + fire + earth + air, or steam + lava + sand + ice
     "steam", // water + fire + aether
     "lava", // fire + earth + aether
     "sand", // earth + air + aether
@@ -184,10 +185,14 @@ const app = new Vue({
         game,
         machines: Machine.names,
         recipes,
-        itemNames
+        itemNames,
+        selectElements: [null, null]
     },
     computed: {
-
+        selectableElement() {
+            const playerElements = game.entanglements.flat()
+            return this.itemNames.filter(x => !playerElements.includes(x))
+        }
     },
     methods: {
         makeMachine(i) {
@@ -196,6 +201,16 @@ const app = new Vue({
         },
         deleteMachine(mac) {
             this.game.machines = this.game.machines.filter(m => m !== mac)
+        },
+        entangle() {
+            const [a, b] = this.selectElements
+            if (a === b) return
+            if (!this.selectableElement.includes(a) || !this.selectableElement.includes(b)) return
+            if ((this.game.inventory[a] || 0) < 1 || (this.game.inventory[b] || 0) < 1) return 
+            this.game.inventory[a] -= 1
+            this.game.inventory[b] -= 1
+            this.game.entanglements.push([a, b])
+            this.selectElements = [null, null]
         }
     },
     mounted() {

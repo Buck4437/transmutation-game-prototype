@@ -67,6 +67,22 @@
                     {{machines[i-1]}}
                 </button>
             </div>
+            <br>
+            <div>
+                Entanglements:<br>
+                <div v-for="item in game.entanglements">{{item[0]}} &lt;--&gt; {{item[1]}}</div>
+                <br>
+                <select v-model="selectElements[0]">
+                    <option :value="null">---</option>
+                    <option v-for="name in selectableElement">{{name}}</option>
+                </select><br>
+                <select v-model="selectElements[1]">
+                    <option :value="null">---</option>
+                    <option v-for="name in selectableElement">{{name}}</option>
+                </select><br>
+                <button @click="entangle">Create new entanglement (Cost 1 of each element)</button>
+            </div>
+            <br>
             <div>
                 Inventory:<br>
                 <div v-for="(value, name) in game.inventory">{{name}}: {{value}}</div>
