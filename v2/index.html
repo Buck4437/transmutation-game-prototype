@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Transmutation Prototype</title>
+        <link rel="stylesheet" href="stylesheets/styles.css">
+    </head>
+    <body>
+        <div id="app">
+            <div>
+                <div v-for="machine in game.machines" class="machine">
+                    ID: {{machine.id}}<br>
+                    Type: {{machines[machine.type]}}<br>
+                    <div v-if="machine.alwaysOn === false">
+                        Activated: <button @click="machine.on = !machine.on">{{machine.on ? "On" : "Off"}}</button><br>
+                    </div>
+                    <div v-if="machine.isPushing !== undefined">
+                        Is pushing: <button @click="machine.isPushing = !machine.isPushing">{{machine.isPushing ? "On" : "Off"}}</button><br>
+                    </div>
+                    
+                    <div v-if="machine.itemType !== undefined">
+                        <div v-if="machine.type === 0">
+                            Select extracted item: "water" (You can't extract anything else yet)
+                            <br>
+                        </div>
+                        <div v-if="machine.type === 2">
+                            Select extracted item:<br>
+                            <select v-model="machine.itemType">
+                                <option :value="null">---</option>
+                                <option v-for="name in itemNames" :value="name">{{name}}</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <div v-if="machine.recipe !== undefined">
+                        Select recipe:<br>
+                        <select v-model="machine.recipe">
+                            <option v-for="recipe in recipes" :value="recipe">{{recipe.format()}}</option>
+                        </select>
+                        <br>
+                    </div>
+    
+                    <div v-if="machine.targetOutput !== undefined">
+                        Enter target output id:<input v-model.number="machine.targetOutput" type="number"><br>
+                        Current id is {{machine.targetOutput}}
+                        <br>
+                    </div>
+    
+                    <div v-if="machine.inputs !== undefined">
+                        Inputs:<br>
+                        <div v-for="(value, name) in machine.inputs">{{name}}: {{value}}</div>
+                    </div>
+    
+                    <div v-if="machine.outputs !== undefined">
+                        Outputs:<br>
+                        <div v-for="(value, name) in machine.outputs">{{name}}: {{value}}</div>
+                    </div>
+    
+                    <button @click="machine.voidContent()">VOID ALL CONTENT</button>
+                    <button @click="deleteMachine(machine)">DELETE MACHINE</button><br>
+                    <br>
+                </div>
+            </div>
+            <div>
+                Make new machine:<br>
+                <button v-for="i in 5" @click="makeMachine(i-1)">
+                    {{machines[i-1]}}
+                </button>
+            </div>
+            <div>
+                Inventory:<br>
+                <div v-for="(value, name) in game.inventory">{{name}}: {{value}}</div>
+            </div>
+        </div>
+         <!-- Switch when update !-->
+         <script src="javascripts/libraries/vue.js"></script>
+         <script src="javascripts/index.js"></script>
+    </body>
+</html>
