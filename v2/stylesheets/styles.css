@@ -1,0 +1,12 @@
+.machine-con {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.machine {
+    width: 300px;
+    border: 2px solid black;
+    margin: 8px;
+    padding: 8px;
+}

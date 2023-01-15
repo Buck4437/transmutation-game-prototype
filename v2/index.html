@@ -7,7 +7,7 @@
     </head>
     <body>
         <div id="app">
-            <div>
+            <div class="machine-con">
                 <div v-for="machine in game.machines" class="machine">
                     ID: {{machine.id}}<br>
                     Type: {{machines[machine.type]}}<br>
@@ -27,7 +27,7 @@
                             Select extracted item:<br>
                             <select v-model="machine.itemType">
                                 <option :value="null">---</option>
-                                <option v-for="name in itemNames" :value="name">{{name}}</option>
+                                <option v-for="name in itemNames">{{name}}</option>
                             </select>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                         Inputs:<br>
                         <div v-for="(value, name) in machine.inputs">{{name}}: {{value}}</div>
                     </div>
-    
+                    
                     <div v-if="machine.outputs !== undefined">
                         Outputs:<br>
                         <div v-for="(value, name) in machine.outputs">{{name}}: {{value}}</div>

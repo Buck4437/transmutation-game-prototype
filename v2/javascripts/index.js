@@ -95,7 +95,7 @@ class Machine {
     }
 
     run(dt) {
-        if (this.on === false && !this.alwaysOn) return
+        // If pushing is on, extract item
         if (this.isPushing === true) {
             if (game.machines.filter(m => m.inputs !== undefined).map(x => x.id).includes(this.targetOutput)) {
                 let machine = game.machines.filter(m => m.id === this.targetOutput)[0]
@@ -110,6 +110,8 @@ class Machine {
                 }
             }
         }
+
+        if (this.on === false && !this.alwaysOn) return
         
         // Produce stuff
         let outputKeys = Object.keys(this.outputs || {})
