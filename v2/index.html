@@ -70,7 +70,9 @@
             <br>
             <div>
                 Entanglements:<br>
-                <div v-for="item in game.entanglements">{{item[0]}} &lt;--&gt; {{item[1]}}</div>
+                <div v-for="item in game.entanglements">
+                    {{item[0]}} &lt;--&gt; {{item[1]}} <button @click="unentangle(item)">Destroy entanglement (Cost 10 of each item)</button>
+                </div>
                 <br>
                 <select v-model="selectElements[0]">
                     <option :value="null">---</option>
@@ -83,6 +85,7 @@
                 <button @click="entangle">Create new entanglement (Cost 1 of each element)</button>
             </div>
             <br>
+            <button @click="game.upgCount += 1">Increment Upgrade count (too lazy to implement) (First at 1 air, then at 1 aether, then at 1 void)</button> {{game.upgCount}}
             <div>
                 Inventory:<br>
                 <div v-for="(value, name) in game.inventory">{{name}}: {{value}}</div>

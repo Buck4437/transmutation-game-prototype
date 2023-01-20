@@ -9,4 +9,5 @@
     border: 2px solid black;
     margin: 8px;
     padding: 8px;
+    min-height: 300px;
 }
