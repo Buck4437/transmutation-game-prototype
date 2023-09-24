@@ -1,0 +1,8 @@
+Coordinate system:
+- Uses 0, 0 as the origin
+- Boundary -1000000 ~ 1000000
+- Top and left offset by +1000000 to simulate negative coordinate
+- Add border display
+
+Lag test:
+- Create 10000 machines

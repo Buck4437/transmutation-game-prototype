@@ -79,32 +79,43 @@ canvas.on('mouse:down', function(options) {
 });
 
 canvas.on('mouse:move', function(options) {
-  if (inSelection) {
-    let [x, y] = [options.e.clientX, options.e.clientY]
-    temporaryOffset = {
-      left: x - previousSelected.left,
-      top: y - previousSelected.top
-    }
-    for (let object of objects) {
-      object.element.left = object.position.left + cumulativeOffset.left + temporaryOffset.left
-      object.element.top = object.position.top + cumulativeOffset.top + temporaryOffset.top
+    if (inSelection) {
+        let [x, y] = [options.e.clientX, options.e.clientY]
+        temporaryOffset = {
+            left: (x - previousSelected.left) / canvas.getZoom(),
+            top: (y - previousSelected.top) / canvas.getZoom()
+        }
+        for (let object of objects) {
+            object.element.left = object.position.left + cumulativeOffset.left + temporaryOffset.left
+            object.element.top = object.position.top + cumulativeOffset.top + temporaryOffset.top
 
-      // cheap solution,
-      canvas.remove(object.element)
-      canvas.add(object.element)
+            // cheap solution,
+            canvas.remove(object.element)
+            canvas.add(object.element)
+        }
+        console.log(objects.length)
+        canvas.renderAll()
     }
-    console.log(objects.length)
-    canvas.renderAll()
-  }
 });
 
 canvas.on('mouse:up', function(options) {
-  console.log(options.e.clientX, options.e.clientY);
+    console.log(options.e.clientX, options.e.clientY);
 
-  inSelection = false
-  cumulativeOffset.left += temporaryOffset.left
-  cumulativeOffset.top += temporaryOffset.top
-  console.log(2)
+    inSelection = false
+    cumulativeOffset.left += temporaryOffset.left
+    cumulativeOffset.top += temporaryOffset.top
+    console.log(2)
 
-  console.log(options.target)
+    console.log(options.target)
 });
+
+canvas.on('mouse:wheel', function(opt) {
+    let delta = opt.e.deltaY;
+    let zoom = canvas.getZoom();
+    zoom *= 0.999 ** delta;
+    if (zoom > 20) zoom = 20;
+    if (zoom < 0.01) zoom = 0.01;
+    canvas.setZoom(zoom);
+    opt.e.preventDefault();
+    opt.e.stopPropagation();
+})
